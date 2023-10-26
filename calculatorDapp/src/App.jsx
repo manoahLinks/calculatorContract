@@ -38,8 +38,16 @@ function App() {
     args: [number]
   })
 
+  const { config: config3 } = usePrepareContractWrite({
+    address: '0xc63A24f469E1eFe196968D9126a289f3b462E8F3',
+    abi: calculatorAbi,
+    functionName: 'divideState',
+    args: [number]
+  })
+
   const { data: writeData, isLoading: writeLoading, isSuccess, write } = useContractWrite(config)
   const { data: writeData2, isLoading: writeLoading2, isSuccess: isSuccess2, write: write2 } = useContractWrite(config2)
+  const { data: writeData3, isLoading: writeLoading3, isSuccess: isSuccess3, write: write3 } = useContractWrite(config3)
 
   const { data: waitData, isError: waitError, isLoading: waitLoading, isSuccess: waitSuccess } = useWaitForTransaction({
     hash: writeData?.hash,
@@ -67,6 +75,19 @@ function App() {
     }
   })
 
+  const { data: waitData3, isError: waitError3, isLoading: waitLoading3, isSuccess: waitSuccess3 } = useWaitForTransaction({
+    hash: writeData3?.hash,
+    onSuccess(data){
+      console.log(data)
+      toast.success('Successfully divided')
+    },
+
+    onError(error){
+      console.log(error)
+      toast.error(error.message)
+    }
+  })
+
   const handleSetValue = async (e) => {
     e.preventDefault()
     write?.()
@@ -81,10 +102,12 @@ function App() {
     waitSuccess2()
   }
 
+
   const handleDivision = async (e) => {
     e.preventDefault()
-
-    alert(number)
+    write3?.()
+    isSuccess3()
+    waitSuccess3()
   }
 
   return (
@@ -117,7 +140,7 @@ function App() {
             <div className='flex items-center justify-center gap-x-4'>
               <button onClick={handleSetValue} className='p-2 rounded-md bg-blue-500 text-white hover:bg-opacity-50'>{writeLoading || waitLoading ? `setting ...` : `set`}</button>
               <button onClick={handleMultiplication} className='p-2 rounded-md bg-lime-500 text-white hover:bg-opacity-50'>{writeLoading2 || waitLoading2 ? `multiplying ...` : `multiply`}</button>
-              <button onClick={handleDivision} className='p-2 rounded-md border border-lime-500 text-lime-500 hover:bg-lime-100'>Divide</button>
+              <button onClick={handleDivision} className='p-2 rounded-md border border-lime-500 text-lime-500 hover:bg-lime-100'>{writeLoading3 || waitLoading3 ? `dividing ...` : `divide`}</button>
             </div>
           </form>
         </div>
